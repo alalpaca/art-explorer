@@ -63,7 +63,7 @@ The Express layer handles orchestration (e.g. Met’s “search IDs then hydrate
 **Requirements:** Node.js 18+ and a [Harvard Art Museums API key](https://harvardartmuseums.org/collections/api) if you use Harvard or “both” sources (Met-only works without it).
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/alalpaca/art-explorer.git
 cd art_explorer
 npm install
 export HARVARD_API_KEY="your_key"   # omit for Met-only dev

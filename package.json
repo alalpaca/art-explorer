@@ -1,0 +1,15 @@
+{
+  "name": "art-explorer",
+  "version": "1.0.0",
+  "description": "Art Collection Explorer with Favorites (CSCI 571)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

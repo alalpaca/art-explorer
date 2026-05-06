@@ -1,0 +1,140 @@
+# AI-Assisted Development Log
+# Art Explorer - CSCI 571 Assignment 3
+# Student Name: Yunfei Wang
+# Date: 2026-05-06
+
+================================================================================
+Important Notes:
+All documents sent to the AI assistant (AE_PRD.md, AE_TECHDESIGN.md, AE_AGENTS.md,
+Assignment3.pdf, AE_Layout.md from Obsidian, and UI screenshots) were used to
+guide implementation. This log summarizes prompts, outcomes, and what I verified
+on my machine. Source code submitted excludes node_modules and API keys.
+================================================================================
+
+================================================================================
+SESSION 1: Search Semantics, Related Works, and Data Edge Cases
+================================================================================
+
+PROMPT 1:
+"Why does teacher get 320 Monet results but I only get 4?"
+
+AI RESPONSE SUMMARY:
+- Explained Met API: omitting hasImages returns all matches; hasImages=false means
+  objects without images only (small set for Monet). User chose checkbox behavior:
+  checked => hasImages=true; unchecked => no hasImages parameter (full set).
+
+WHAT I LEARNED:
+- hasImages=false is not "show everything"; it filters to non-image records.
+
+ISSUES ENCOUNTERED:
+- Confusion between total count vs first-page card content (keyword search is not
+  strict artist-only).
+
+HOW I FIXED IT:
+- Aligned UI/backend with chosen semantics; documented in conversation.
+
+--------------------------------------------------------------------------------
+
+PROMPT 2:
+"Related works should all have images; match assignment API; fix Harvard search
+for typos like van goph."
+
+AI RESPONSE SUMMARY:
+- Related endpoint: keep hasImages=true for Met slice; filter Harvard records to
+  hasImage; fill up to 8 items without showing gray placeholders in grid.
+- normalizeUserSearchQuery: replace goph -> gogh for broader matching.
+
+WHAT I LEARNED:
+- Met can return artist-adjacent hits in keyword search; related works still need
+  image-only filtering for consistent UI.
+
+ISSUES ENCOUNTERED:
+- Over-strict artist matching made related list empty; relaxed to image-only.
+
+HOW I FIXED IT:
+- Removed overly strict same-artist filter after verifying Met batch results.
+
+--------------------------------------------------------------------------------
+
+PROMPT 3:
+"Map tab should show street address, not lat/lng; Overview button hover; favorites
+UX; mobile layout; tooltip persistence bug."
+
+AI RESPONSE SUMMARY:
+- museumLocation extended with fixed street strings for Met and Harvard.
+- CSS/HTML/JS iterations for Overview link, no-image detail block, related hover
+  (custom cursor-following tip + hide on navigation), hamburger menu on small
+  screens, two-column grids, tab wrapping.
+
+WHAT I LEARNED:
+- Bootstrap tooltips need dispose on view change or they "stick" on the page.
+- Custom hover labels must be hidden in showView/resetDetailTabData.
+
+ISSUES ENCOUNTERED:
+- Tooltip/hover label remained visible after clicking related thumbnail.
+
+HOW I FIXED IT:
+- Central hideRelatedHover() on view switch and detail reset.
+
+================================================================================
+SESSION 2: Local Run, Dependencies, and Cloud Deployment Prep
+================================================================================
+
+PROMPT 4:
+"Where do I run gcloud? How do I set HARVARD_API_KEY? node server.js says
+Cannot find module 'express'."
+
+AI RESPONSE SUMMARY:
+- Run gcloud from project root when using builds submit / run deploy --source .
+- Set HARVARD_API_KEY inline: HARVARD_API_KEY=... npm start
+- Run npm install in art_explorer so express is installed in node_modules.
+
+WHAT I LEARNED:
+- Assignment step "node server.js" assumes dependencies are installed first
+  (npm install).
+
+ISSUES ENCOUNTERED:
+- MODULE_NOT_FOUND for express after clone or fresh folder without npm install.
+
+HOW I FIXED IT:
+- cd art_explorer && npm install && HARVARD_API_KEY=... node server.js
+
+--------------------------------------------------------------------------------
+
+PROMPT 5:
+"How to deploy to Google Cloud (project artwork-explorer, Docker Desktop)?"
+
+AI RESPONSE SUMMARY:
+- Documented: gcloud auth login, config set project, enable APIs, builds submit,
+  run deploy with --set-env-vars HARVARD_API_KEY=...
+- Added .dockerignore to exclude node_modules from build context.
+
+WHAT I LEARNED:
+- Cloud Build can build the image remotely; local Docker is optional for a dry run.
+
+ISSUES ENCOUNTERED:
+- None recorded yet on actual deploy (user to run commands in their GCP project).
+
+HOW I FIXED IT:
+- Follow assignment Cloud Run steps; verify service URL in Chrome.
+
+================================================================================
+REFLECTION
+================================================================================
+
+Most useful AI assistance:
+- End-to-end Express proxy design and Met/Harvard/Wikipedia orchestration in one
+  place (server.js) with clear normalization for the frontend.
+- Debugging Met 403 and rate pressure (headers, retries, concurrency, cache).
+- UI polish against AE_Layout and screenshots: tabs, map, favorites, mobile nav,
+  related works grid and hover behavior.
+- Clear separation of secrets (HARVARD_API_KEY only in env, never in public/).
+
+What I would do differently:
+- Run npm install immediately after cloning or copying the project to avoid
+  MODULE_NOT_FOUND during demo recording.
+- Capture Met API behavior (hasImages) in a short comment in server.js for future me.
+- Test Cloud Run deploy early to catch billing/API enable issues before deadline.
+
+Time spent: 9 hours
+AI tools used: Cursor(Opus4.7), ChatGPT 
